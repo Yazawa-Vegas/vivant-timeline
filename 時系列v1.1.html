@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIVANT 劇中時系列</title>
+<style>
+:root{--bg:#05070b;--panel:#0d131c;--card:#111a25;--text:#f3f6fa;--muted:#aab6c4;--line:#2a3747;--japan:#d63d4f;--group:#9b5de5;--police:#4387e8;--balkar:#d6a823;--xinxi:#37b96b;--on:#35a7ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans JP","Yu Gothic",Meiryo,sans-serif;line-height:1.55}.page{width:min(1600px,calc(100% - 24px));margin:auto;padding:24px 0 56px}.header{margin-bottom:18px}h1{margin:0;font-size:clamp(1.6rem,2.8vw,2.4rem);letter-spacing:.02em}.subtitle{margin:8px 0 0;color:var(--muted);font-size:.88rem}.toolbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;margin-bottom:12px;border:1px solid var(--line);background:rgba(13,19,28,.97);box-shadow:0 5px 18px #0008}.toolbar-title{font-weight:800;font-size:.9rem}.toolbar-controls{display:flex;gap:8px}.mode-btn{border:1px solid #aab6c4;background:#fff;color:#05070b;padding:8px 13px;border-radius:4px;font:inherit;font-size:.84rem;font-weight:800;cursor:pointer}.mode-btn.active{background:var(--bg);color:#fff;border-color:#fff}.mode-btn:focus-visible,.event-toggle input:focus-visible{outline:3px solid var(--on);outline-offset:2px}.timeline-wrap{border:1px solid var(--line);background:var(--panel);overflow:visible}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}thead th{position:sticky;top:59px;z-index:20;padding:10px 6px;background:#182331;color:#fff;text-align:center;font-size:.78rem;font-weight:800}thead th:first-child{width:14%;text-align:center}thead th:not(:first-child){width:17.2%}.head-japan{background:#72232e}.head-group{background:#552d7e}.head-police{background:#234e8b}.head-balkar{background:#725711}.head-xinxi{background:#21683e}tbody td{vertical-align:top;padding:8px 7px;min-height:88px;background:var(--panel)}tbody td:first-child{padding:0;background:#101b28;color:#e7edf5;text-align:center;font-weight:800}.date-content{display:flex;justify-content:center;align-items:flex-start;min-height:88px;padding:14px 6px;overflow-wrap:anywhere}.event-list{display:flex;flex-direction:column;gap:7px}.event-card{display:flex;flex-direction:column;gap:7px;padding:9px 9px 8px;border:1px solid var(--line);border-left:5px solid var(--line);background:var(--card);overflow-wrap:anywhere}.event-card[data-affiliation="日本/丸菱"]{border-left-color:var(--japan)}.event-card[data-affiliation="別班"]{border-left-color:var(--group)}.event-card[data-affiliation="公安"]{border-left-color:var(--police)}.event-card[data-affiliation="バルカ/テント"]{border-left-color:var(--balkar)}.event-card[data-affiliation="シンシー"]{border-left-color:var(--xinxi)}.event-toggle{display:inline-flex;align-items:center;gap:6px;width:max-content;color:#e7edf5;font-size:.72rem;font-weight:800;cursor:pointer}.event-toggle input{width:17px;height:17px;margin:0;accent-color:var(--on);cursor:pointer}.event-text{margin:0;font-size:.86rem;line-height:1.65}.empty{min-height:38px}.no-data{padding:24px;text-align:center;color:var(--muted);font-weight:800}.error-summary{padding:10px 14px;margin:0 0 12px;border:1px solid #a83b47;background:#32151a;color:#ffd9dd;font-size:.84rem}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:760px){.page{width:calc(100% - 12px);padding-top:14px}.toolbar{align-items:flex-start;flex-direction:column}.toolbar-controls{width:100%}.mode-btn{flex:1;padding:8px 5px}thead th{top:105px;padding:8px 3px;font-size:.67rem;line-height:1.25}thead th:first-child{width:15%}thead th:not(:first-child){width:17%}tbody td{padding:5px 4px}.date-content{padding:10px 3px;font-size:.76rem}.event-card{padding:7px 6px 6px;border-left-width:4px}.event-text{font-size:.74rem;line-height:1.5}.event-toggle{font-size:.66rem;gap:4px}.event-toggle input{width:18px;height:18px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.mode-btn{transition:none}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="header"><h1>VIVANT 劇中時系列</h1><p class="subtitle">劇中で起きた順に整理した出来事。年号・年月・年月日の粒度を保ち、所属ごとに表示しています。</p></header>
+<div id="error-summary" class="error-summary" hidden role="alert"></div>
+<div class="toolbar" aria-label="表示切替ツールバー"><div class="toolbar-title">表示切替</div><div class="toolbar-controls" role="group" aria-label="表示方法"><button class="mode-btn active" type="button" data-mode="all" aria-pressed="true">すべて表示</button><button class="mode-btn" type="button" data-mode="enabled" aria-pressed="false">オンのみ表示</button></div></div>
+<div class="timeline-wrap"><table aria-label="VIVANT劇中時系列表"><thead><tr><th scope="col">年号</th><th scope="col" class="head-japan">日本/丸菱</th><th scope="col" class="head-group">別班</th><th scope="col" class="head-police">公安</th><th scope="col" class="head-balkar">バルカ/テント</th><th scope="col" class="head-xinxi">シンシー</th></tr></thead><tbody id="timeline-body"></tbody></table></div>
+</div>
+<script>
+const columns=['日本/丸菱','別班','公安','バルカ/テント','シンシー'];
+const sourceText=`VIVANT時系列（日本/丸菱、別班、公安、バルカ/テント、シンシー）
+
+1979年｜乃木卓が公安の任務でバルカ共和国へ赴任し、農業使節団員を装う。（バルカ/テント）
+
+1981年01月25日｜乃木憂助が乃木卓と明美の長男として生まれる。（バルカ/テント）
+
+1984年｜バルカ内戦が激化し、乃木一家は生き別れ、憂助は人身売買組織に引き渡される。（バルカ/テント）
+
+1984年～1986年｜乃木卓が憂助を探す。（バルカ/テント）
+
+1986年～1996年｜バルカで乞食をさせられていた憂助がジャーナリストに保護され、児童養護施設「丹後つばさ園」に入り、「丹後隼人」として日本で育つ。（日本/丸菱）
+
+1987年～1988年｜乃木卓がノゴーン・ベキとして、ノコルをはじめとする孤児たちを保護して共同体を作る。（バルカ/テント）
+
+1988年～2020年｜ノゴーン・ベキがバトラカや孤児たちに支えられながら、テントとして活動を続ける。（バルカ/テント）
+
+1996年～2003年｜乃木憂助が海外で学び、アメリカの高校を卒業した後、コロンビア大学で経済学を学ぶ。（日本/丸菱）
+
+2003年～2006年｜乃木が自衛隊に入隊し、表向きは東京大学大学院に通学しながら心理戦の教育を受け別班に配属される。（別班）
+
+2006年～2023年｜乃木憂助が丸菱商事に入社する。表向きは会社員として働き、丸菱商事での勤務を別班活動の隠れ蓑にする。（日本/丸菱）
+
+2015年｜エリシャが持続的な核融合反応を可能にする技術を完成させ、研究機関による検証が始まる。（別班）
+
+2016年02月｜西側諸国をはじめとする各国の諜報機関が調査を実施した結果、エリシャの開発がデマだと結論付けられ、エリシャの身柄捜索が中止される。（別班）
+
+2016年05月｜エリシャの死亡が報じられる。（別班）
+
+2016年08月05日｜シンシーはエリシャの生存を把握し、確保する。（シンシー）
+
+2018年02月｜野崎守が北京の日本大使館に赴任する。野崎は劉銘軒と張競士に出会う。（公安）
+
+2018年04月13日｜劉銘軒が北朝鮮のミサイル関連会議へ潜入した後、劉が行方不明となる。（公安）
+
+2018年04月20日｜北朝鮮から外務省に劉の拘束写真が送られる。（公安）
+｜日本として表向きは関知せずとしつつ、予備費の2,000万円で秘密裏に救出作戦を実行する。（公安）
+
+2018年04月30日｜日本側の劉救出作戦が失敗し、劉の死亡写真が届く。（公安）
+
+2018年～2023年｜劉は北朝鮮にシンシーであることを明かし、裏でシンシーとして活動を続ける。（シンシー）
+
+2018年05月｜樊林杏が野崎に接触し、劉を救えなかった自責の念を利用してシンシーへの協力を持ちかける。（公安）
+
+2018年06月｜張競士が野崎にエリシャの情報を渡す。（公安）
+｜エリシャが生存しておりシンシーに拘束されていること、エリシャがシンシーに中央アジアをバルカを拠点とする謎のテロ組織に関する条件を出しており研究成果の奪還に時間を要していること、を知った野崎は、核融合技術が中国側に独占されることを阻止するため、シンシーと公安とのダブルエージェントを実行しながら、別班情報を取得とテントの調査を計画する。（公安）
+
+2018年12月｜野崎が樊に接触し、別班の情報を取引材料にしてシンシーへの潜入を始める。（公安）
+
+2019年02月｜公安の機密事項がシンシーの樊に漏れていることから、監視されていることを疑う。（公安）
+
+2020年～2023年｜ノコルが孤児を救出する過程で、地震で現れたフローライトの鉱床を発見し、テントが周辺の土地を取得する。（バルカ/テント）
+｜土地取得のための資金集めに大規模なテロを受注し実行する。（バルカ/テント）
+
+2021年｜野崎がバルカ共和国に赴任。（公安）
+｜テントの実態と別班を追うため、バルカには珍しい日本人が現れることを待つ。（公安）
+
+2021年08月｜野崎の部下である新庄が飛行運転免許の教習に通い始める。（公安）
+
+2021年12月10日｜新庄が野崎に教習所をやめたと報告。（公安）
+｜実際はアリの勧誘でテントのモニター活動をスタートし、ライセンス取得。（バルカ/テント）
+
+2023年02月｜太田梨歩がテントのモニター山本巧に脅され、送金システムを書き換える。（日本/丸菱）
+｜丸菱商事からバルカのGFL社へ1,000万ドルではなく1億ドルが誤送金される。（日本/丸菱）
+
+2023年02月13日｜乃木がアリと接触。（日本/丸菱）
+｜ザイールがダイヤモンドを受け取ったことを、乃木が高校時代の親友であるアメリカCIAのサムから教えてもらう。（バルカ/テント）
+
+2023年02月14日～2023年02月18日｜乃木がタクシー詐欺で砂漠に置き去りにされ、アディエルとジャミーンに発見される。（バルカ/テント）
+｜ザイールがセドルで爆発。（バルカ/テント）
+｜アディエルが巻き込まれて死亡。（バルカ/テント）
+｜野崎が乃木を救出し、薫が治療する。（バルカ/テント）
+
+2023年02月19日～2023年02月28日｜バルカの日本大使館で野崎と乃木は「VIVANT」の正体を追い、テントが誤送金事件の背後にいる可能性が浮上する。（バルカ/テント）
+
+2023年02月～2023年04月｜野崎がバルカ政府の不正を追う。（公安）
+
+2023年03月01日～2023年03月07日｜乃木、野崎、薫が死の砂漠を生き延び、日本へ帰国。（バルカ/テント）
+
+2023年03月｜太田が誤送金事件への関与を疑われて逮捕・起訴されるが行方不明となる。（公安）
+｜丸菱商事の長野専務が過剰に太田に接触しようとしていることが判明。（公安）
+｜別班が太田の保釈金を用意し、太田は協力者となってハッキング能力で別班を支援する。（別班）
+｜乃木と部下の黒須が、山本を尋問しテントと日本の関係、アリの地位等を吐かせたうえで抹殺。（別班）
+｜山本が誤送金の犯行を告白し自殺したことが報告される。（日本/丸菱）
+｜野崎が乃木の別班を疑い、乃木の幼少期の京都にある学校や実家の島根を調査。（公安）
+｜公安の佐野と野崎は、公安内の防犯カメラにシンシーの小型監視カメラが仕掛けられていることを突き止める。（公安）
+
+2023年03月～2023年04月｜太田がアリの数字を解析する。（別班）
+｜テントのサーバー情報と世界規模のネットワークが判明する。（別班）
+｜乃木が別班を裏切ったように偽装し、乃木はテントに自分を売り込んで内部へ入る。（別班）
+｜野崎が乃木の暗示を察し、別班員の死を偽装する。（公安）
+｜DNA鑑定により、ノゴーン・ベキと憂助の親子が証明されテントの実態が明らかになる。（バルカ/テント）
+｜別班裏切りの偽装を打ち明け、別班の任務としてテントに協力する。（別班）
+
+2023年04月｜テント、日本政府、バルカ政府、ベレール興産がフローライト利権を巡って政治問題へ。（バルカ/テント）
+｜贈収賄を含む政府側の動きが明らかになると同時にノゴーン・ベキ、バトラカ、ピヨを日本へ送還。（バルカ/テント）
+｜野崎がバルカ警察のチンギスに伝言を託す。（公安）
+
+2023年05月06日｜テントのモニターである新庄の手引きで、ベキらが逃亡。（公安）
+｜乃木は守り刀を黒須に託し、日本へ帰国。（別班）
+｜野崎が、かつて新庄がパイロット資格を取得したクーダン国立飛行訓練所へ電話。（公安）
+｜野崎の指示で、東条が茨城空港の監視映像にノイズを仕掛け、新庄の逃亡先がロシアのウラジオストクであるかのような誘導をする。（公安）
+｜新庄は変装して新富士空港の搭乗ゲートを通過し、チョッキーの手引きでタイ・バンコクへ向かう。（バルカ/テント）
+｜日本の静岡県で線状降水帯発生。（日本/丸菱）
+
+2023年05月07日｜新庄がタイ・バンコクに到着する。（バルカ/テント）
+｜黒須を狙うシンシー側の部隊5人がバルカへ入国する。（シンシー）
+｜日本各地の病院で療養していた別班員4人の夕食に薬物が仕込まれる。（別班）
+｜上原副長官宅へベキらが襲撃するも乃木によって阻止され、上原邸の火災によりベキ、ピヨ、バトラカは死亡。（別班）
+｜乃木がノコルと電話で話し、「皇天親無く惟徳を是輔く」と伝言。（バルカ/テント）
+
+2023年05月08日｜黒須がバルカでシンシー側の部隊に襲撃され、拉致される。（シンシー）
+｜日本各地の病院で療養していた別班員4人も相次いで襲撃され、拉致される。（別班）
+｜テント侵入作戦に参加していた黒須を含む別班員5人が、ほぼ同時に世界各地へ連れ去られる。（シンシー）
+｜乃木は防衛省地下の別班司令部へ向かい、別班員5人が拉致されたことを正式に知らされる。（別班）
+｜乃木は三越で野崎と接触し、別班員5人の拉致について情報を共有することで、公安と別班が同時に新庄をマークする。（公安）
+｜乃木は丸菱商事へ向かい、その後、岐阜へ。（日本/丸菱）
+｜ホテルでロシア人の産業スパイに襲撃される。（別班）
+｜野崎の指示を受けたドラムが乃木の前に現れ、以後、乃木とドラムが行動を共にする。（別班）
+
+2023年05月9日｜乃木とドラムがバルカへ向かう。（別班）
+｜ベキらの遺骨の一部をノコルらへ渡す。（バルカ/テント）
+｜黒須が拉致されたゲルに仕込んでいた隠しカメラを調査。（バルカ/テント）
+｜黒須がアゼルバイジャンに輸送されたことを突き止める。（別班）
+
+2023年05月10日｜野崎はホテルニューオータニに滞在する乃木寛道と接触。（公安）
+｜乃木はキプロスへ向かい、新庄を追う手がかりを掴むためにアリへ訪問。（別班）
+
+2023年05月11日｜キプロスにいるアリを捕らえ新庄について尋問。（別班）
+｜アリから、逃亡した新庄が以前から教習所に通い続けていたことを聞き、野崎に伝える。（別班）
+｜新庄が茨城空港からプライベートジェットで逃亡した疑惑が浮上。（別班）
+｜野崎が女性の人形を見せながら別班の指令の意見を聞く。（公安）
+｜アリがジャミーンのバルカ生活を強く反対。（バルカ/テント）
+
+2023年05月12日｜茨城空港発のウラジオストク行きに惑わされるが、線状降水帯をヒントに新富士空港発のバンコク行きを突き止める。（別班）
+｜タイの実業家であるチョッキーテーパーニットがテントのモニターであることが判明し、バンコクへ向かうためにカンボジアのプノンペンへ向かう。（別班）
+
+2023年05月13日｜乃木とドラムは新庄とチョッキーを追って、カンボジアを経由してバンコクへ向かう。（別班）
+｜アリがノコルを支えるためにバルカへ。（バルカ/テント）
+
+2023年05月14日｜乃木とドラムは納豆を手掛かりに、新庄とチョッキーの潜伏先を突き止める。（別班）
+
+2023年05月15日｜乃木は、丸菱商事の専務であり別班員であった長野と合流し、新庄を確保するための作戦を準備する。（別班）
+
+2023年05月16日｜乃木たちはチョッキーの隠れ家へ向かい、新庄の確保を試みる。（別班）
+｜乃木たちは新庄を拘束して尋問するが、新庄とチョッキーは別班5人の拉致事件を主導した黒幕ではなかったことが判明。（別班）
+｜茨城空港の監視カメラ映像加工の犯人が東条であることを突き止め、野崎が警視庁の建物内からクーダン国立飛行訓練所へ電話していることから、別班員拉致に関与していることが判明。（別班）
+｜野崎は行方不明になり、偽装パスポートでイスラエルのエルサレムへ移動後、樊林杏に接触。（公安）
+
+2023年05月17日｜新庄とチョッキーが連行され、新庄が逃亡を図ろうとしたところ現地警察に発砲され死亡。（バルカ/テント）
+｜佐野公安部長が野崎の別班員拉致関与を把握していることを確認し、乃木は東条を捕らえるために日本へ追跡に。（別班）
+｜ドラムは薫とジャミーンの保護のために、日本へ向かう。（別班）
+
+2023年05月18日｜東条が鳥取県米子ICまで逃亡していることが判明し乃木も現地付近へ向かう。（別班）
+｜岡山駅で乗り換えて特急やくもに乗車中、野崎がイスラエルに移動したことを突き止め、シンシーの樊林杏との繋がりや野崎と樊がゴルバドに移動したことが判明。（別班）
+｜乃木が島根県雲南市で東条を捕らえ、尋問する。（別班）
+｜東条から、野崎の指示で新庄の逃亡先を欺くための行動をしていたことや、東条自身も部屋にカメラを仕込まれて監視されていたことを聞き出す。（別班）
+
+2023年05月19日｜乃木は東条の部屋に仕掛けられていた監視カメラを発見・回収する。（別班）
+｜乃木とドラムが接触し、野崎とシンシーの繋がりや野崎の居場所がゴルバドであることを共有。（別班）
+｜野崎の伝言を信じ、乃木はバルカのチンギスに会いに行くことを決断。（別班）
+
+2023年05月22日｜バルカでベキの葬儀が行われ、テント首謀者の死が全世界に知れ渡る。（バルカ/テント）
+｜乃木はチンギスと接触し、野崎が以前チンギスに残した「天網恢恢疎にして漏らさず」というメッセージとπの暗号について知る。（別班）
+
+2023年05月23日｜日本時間の午前5時10分、東条のスマートフォンに銀行から振込通知が届き、野崎から「NOZAKI」名義で1億2600万円が東条の口座へ送金される。（別班）
+｜東条は乃木の指示を受け、公安外事4課に仕掛けられている監視カメラを探知し、シンシーのカメラを検知する。（別班）
+｜乃木はジャミーンが通う学校に行き、山本、野崎、佐野の善悪テストを実施する。（別班）
+
+2023年05月24日｜日本時間の午後18時頃、佐野部長を拘束し尋問を実施。（別班）
+｜尋問中の20時44分、野崎から東条へ1億6000万円が送金される。（別班）
+｜２度の送金金額とπというヒントから、別班の監禁場所がシャキ城であると断定。（別班）
+｜一時、別班と公安の共同戦線へ。（公安）
+｜野崎はゴルバド共和国のルモー地区にあるレストラン「13」に３日連続で入り、トイレの窓から向かいの電光掲示板を確認してメモをする。（シンシー）
+｜ゴルバドにあるガリル村のジャマル収容所の、料理人と賄い人が募集される。（シンシー）
+
+2023年05月25日｜ルモー時間16時13分、拉致された5名の別班員を乗せたと思われる輸送車と200名の兵士が、シャキ城からガリル村のジャマル収容所へ移動する。（シンシー）
+｜劉銘軒がレストラン「13」のトイレを調査し、電光掲示板に「SHAKI CASTLE」の表示が出ることを確認する。（シンシー）
+｜佐野が乃木の家に訪問し、ジャミーンによる公安職員の善悪テストを実施した結果、和久井と鈴木が公安内のシンシー工作員の容疑に。（別班）
+｜監視カメラによる和久井の家の調査、尾行や持ち物チェックによる鈴木の調査を実施。（別班）
+
+2023年05月26日～2023年05月28日｜野崎のシンシー幹部入りのテストとして、ポリグラフ検査を実施。（シンシー）
+｜野崎の前に劉銘軒が現れ、シンシーに拘束されたドラムが野崎と合流する。（シンシー）
+｜劉によって公安としてのシンシー潜入が暴かれ、野崎とドラムは拘束される。（シンシー）
+｜劉は10日後に長安から戻る旨を野崎に伝える。（シンシー）
+｜拘束中、ドラムは10人分の食事をするが、野崎は食事どころか水すら与えられなくなる。（シンシー）
+｜公安の鈴木が中国製のイヤホンで公安内を盗聴しシンシーへ映像と音声を報告していたことを突き止める。（別班）
+
+2023年05月29日｜陸自特殊作戦軍により鈴木を取り押さえ。（別班）
+｜太田の家に乃木と佐野が集合し、和久井の日常的なDVと鈴木のダブルエージェントを確認。（別班）
+｜司令部より5名の別班員救出の断念決定が報告される。（別班）
+
+2023年05月30日｜丸菱商事の専務室にて、長野から乃木へY2Kへの支援依頼が提案される。（別班）
+｜乃木とノコルが電話で話し、黒須たちを救出するための支援を承諾。（バルカ/テント）
+
+2023年06月01日｜深大寺にて乃木と桜井が接触し、別班員としては乃木の単独となるY2K部隊のシャキ城襲撃作戦を決断。（別班）
+
+2023年06月02日～2023年06月06日｜東条と太田が、ゴルバド国境から300m付近のアゼルバイジャン某所へ到着。（別班）
+｜9日間食事も水も与えられていない野崎の元へ、予定よりも1日早く劉が戻り水分の治療が施される。（シンシー）
+
+2023年06月02日｜当初の別班員5名毒殺決行予定日。（別班）
+｜乃木がアゼルバイジャンに行き、現地別班員である田代久美子と接触。（別班）
+
+2023年06月03日｜乃木、アゼルバイジャンからバルカへ。（別班）
+｜Y2Kの精鋭部隊を率いるノコルとアリ、元モニターのチョッキーに加えて表向きは死亡したとされた新庄が合流し、乃木主導で作戦会議を実施。（バルカ/テント）
+
+2023年06月07日｜現地時間11時、ゴルバドのイシク発電所に集合。（別班）
+
+2023年06月08日｜現地時間23時、別班奪還作戦決行予定。（別班）
+
+2023年06月10日｜現地時間18時、別班奪還作戦が成功しなかった場合の最終毒殺決行予定日。（別班）`;
+
+function datePart(value){const m=value.match(/^(\d{4})年(?:(\d{1,2})月)?(?:(\d{1,2})日)?$/);return m?{year:+m[1],month:+(m[2]||0),day:+(m[3]||0)}:null}
+function parseDate(raw){const parts=raw.split(/[～〜]/);const start=datePart(parts[0]);const end=parts[1]?datePart(parts[1]):null;return{raw,start,end,sort:[start?.year||0,start?.month||0,start?.day||0]}}
+function labelDate(date){const s=date.start;if(!s)return date.raw;const start=`${s.year}年${s.month?s.month+'月':''}${s.day?s.day+'日':''}`;if(!date.end)return start;const e=date.end;if(s.year===e.year&&s.month===e.month)return `${start}〜${e.day}日`;if(s.year===e.year)return `${start}〜${e.month}月${e.day?e.day+'日':''}`;return `${start}〜${e.year}年${e.month?e.month+'月':''}${e.day?e.day+'日':''}`}
+function parseEvents(){const events=[],errors=[];let currentDate=null;sourceText.split(/\n/).forEach((line,index)=>{line=line.trim();if(!line||line.startsWith('VIVANT時系列'))return;let body=line;if(!line.startsWith('｜')){const split=line.split('｜');if(split.length>1){currentDate=parseDate(split.shift());body=split.join('｜');if(!currentDate.start)errors.push(`${index+1}行目: 日付形式が不正です`)}else if(!currentDate){errors.push(`${index+1}行目: 日付がありません`);return}}else body=line.slice(1);if(!currentDate){errors.push(`${index+1}行目: 日付がありません`);return}const text=body.replace(/（(日本\/丸菱|別班|公安|バルカ\/テント|シンシー)）/g,'').trim();let affiliations=[...body.matchAll(/（(日本\/丸菱|別班|公安|バルカ\/テント|シンシー)）/g)].map(match=>match[1]);const fallback={'乃木は捕らえられている別班5人を救出することを決断する。':['別班'],'シンシーから厳しい条件を突きつけられ、別班5人の救出は最大の危機を迎える。':['シンシー']};if(!affiliations.length)affiliations=fallback[text]||[];if(!text||!affiliations.length){errors.push(`${index+1}行目: 本文または所属がありません`);return}events.push({id:`event-${events.length+1}`,startDate:currentDate.raw,endDate:currentDate.end?.raw||null,text,affiliations:[...new Set(affiliations)],enabled:false,date:currentDate,order:events.length})});return{events,errors}}
+const parsed=parseEvents(),events=parsed.events,body=document.getElementById('timeline-body'),errorSummary=document.getElementById('error-summary'),storageKey='vivant-timeline-v1';let filterMode='all';
+if(parsed.errors.length){errorSummary.hidden=false;errorSummary.textContent=`データ検証: ${parsed.errors.length}件の行を表示対象から除外しました。`}
+function restoreState(){try{const saved=JSON.parse(localStorage.getItem(storageKey)||'{}');if(!saved||typeof saved!=='object')return;events.forEach(event=>{if(typeof saved[event.id]==='boolean')event.enabled=saved[event.id]})}catch(error){localStorage.removeItem(storageKey)}}
+function saveState(){try{localStorage.setItem(storageKey,JSON.stringify(Object.fromEntries(events.map(event=>[event.id,event.enabled]))))}catch(error){}}
+function visible(event){return filterMode==='all'||event.enabled}
+function createCard(event,column){const card=document.createElement('article');card.className='event-card';card.dataset.id=event.id;card.dataset.affiliation=column;const label=document.createElement('label');label.className='event-toggle';const input=document.createElement('input');input.type='checkbox';input.checked=event.enabled;input.setAttribute('aria-label',`${event.text}の表示状態を切り替える`);const state=document.createElement('span');state.textContent=event.enabled?'オン':'オフ';input.addEventListener('change',()=>{event.enabled=input.checked;state.textContent=event.enabled?'オン':'オフ';saveState();render()});label.append(input,state);const text=document.createElement('p');text.className='event-text';text.textContent=event.text;card.append(label,text);return card}
+function timelineSortParts(event){const parts=[...event.date.sort,0];if(event.startDate==='2018年～2023年')return[2019,2,1,0];if(event.startDate==='2023年02月～2023年04月')return[2023,2,19,1];if(event.startDate==='2023年03月01日～2023年03月07日')return[2023,3,0,-1];return parts}
+function compareEvents(a,b){const aParts=timelineSortParts(a),bParts=timelineSortParts(b);for(let index=0;index<aParts.length;index+=1){if(aParts[index]!==bParts[index])return aParts[index]-bParts[index]}return a.order-b.order}
+function render(){const groups=new Map();events.sort(compareEvents).forEach(event=>{const key=event.startDate;let group=groups.get(key);if(!group){group={date:event.date,cells:Object.fromEntries(columns.map(column=>[column,[]]))};groups.set(key,group)}event.affiliations.forEach(column=>group.cells[column].push(event))});body.replaceChildren();let rowCount=0;groups.forEach(group=>{if(filterMode==='enabled'&&!columns.some(column=>group.cells[column].some(visible)))return;const row=document.createElement('tr'),dateCell=document.createElement('td'),dateContent=document.createElement('div');dateContent.className='date-content';dateContent.textContent=labelDate(group.date);dateCell.append(dateContent);row.append(dateCell);columns.forEach(column=>{const cell=document.createElement('td'),list=document.createElement('div');list.className='event-list';const items=group.cells[column].filter(visible);items.forEach(event=>list.append(createCard(event,column)));if(!items.length){const empty=document.createElement('div');empty.className='empty';list.append(empty)}cell.append(list);row.append(cell)});body.append(row);rowCount++});if(!rowCount){const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=6;cell.className='no-data';cell.textContent='表示対象の出来事はありません。';row.append(cell);body.append(row)}}
+document.querySelectorAll('.mode-btn').forEach(button=>button.addEventListener('click',()=>{filterMode=button.dataset.mode;document.querySelectorAll('.mode-btn').forEach(item=>{const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-pressed',String(active))});render()}));
+restoreState();render();
+</script>
+</body>
+</html>
